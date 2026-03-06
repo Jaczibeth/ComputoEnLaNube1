@@ -5,8 +5,8 @@
 steps:
   # construir y empujar imagen frontend
   - name: 'gcr.io/cloud-builders/docker'
-    dir: 'front_alumnos'
-    args: ['build','-t','gcr.io/$PROJECT_ID/alumnos-frontend:$SHORT_SHA','.']
+    # el contexto se pasa explícitamente para evitar problemas con el directorio
+    args: ['build','-t','gcr.io/$PROJECT_ID/alumnos-frontend:$SHORT_SHA','front_alumnos']
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push','gcr.io/$PROJECT_ID/alumnos-frontend:$SHORT_SHA']
 
