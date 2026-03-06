@@ -42,6 +42,58 @@ Asegúrate de tener instalados los siguientes programas:
 *   Node.js (que incluye npm) versión 18.x o superior.
 *   MySQL Server.
 
+## Despliegue en Google Cloud 🌥️
+
+Este repositorio contiene todo lo necesario para subir la aplicación a los servicios administrados de GCP. Según prefieras, puedes desplegar **ambos** componentes (backend + frontend) o **solo el frontend**.
+
+### Preparativos generales
+
+1. **Crear/usar un proyecto de GCP y habilitar APIs**:
+   ```sh
+   gcloud config set project YOUR_PROJECT_ID
+   gcloud services enable cloudbuild.googleapis.com run.googleapis.com containerregistry.googleapis.com
+   ```
+2. **Autenticarse y habilitar Docker para GCP**:
+   ```sh
+   gcloud auth login
+   gcloud auth configure-docker
+   ```
+
+### Opciones de despliegue
+
+* **Despliegue completo**: en la raíz del repo existe un `cloudbuild.yaml` que
+  compila el backend con Maven, construye imágenes Docker para backend y frontend
+  y las despliega a Cloud Run. Este flujo espera variables de entorno para la
+  conexión a la base de datos (_DB_URL, _DB_USER, _DB_PASS_).
+
+* **Despliegue solo frontend**: si no quieres subir el backend, usa
+  `cloudbuild-frontend.yaml` (incluido). Solo construye y publica la imagen del
+  frontend, luego la despliega como servicio `alumnos-frontend` en Cloud Run.
+
+#### Uso manual (p.ej. sin trigger)
+
+```sh
+# build y despliega solo frontend
+gcloud builds submit --config cloudbuild-frontend.yaml .
+
+# build y despliega todo (sustituye valores de DB si es necesario)
+gcloud builds submit --config cloudbuild.yaml \
+    --substitutions=_DB_URL="jdbc:mysql://<IP>:3306/alumnos_tec",_DB_USER="root",_DB_PASS="miClave"
+```
+
+> 💡 Para un pipeline automatizado, crea un trigger de Cloud Build que se
+> dispare al publicar en el repositorio (GitHub/GitLab/Bitbucket) y selecciona
+> el archivo de configuración apropiado.
+
+### Nota sobre la base de datos
+
+La API backend utiliza MySQL. En GCP puedes desplegar una instancia de Cloud
+SQL y conectar la aplicación mediante variables de entorno o a través del
+proxy de Cloud SQL. Si solo subes el frontend, asegúrate de que el valor de
+`baseURL` en el código apunte a tu backend real.
+
+---
+
 ## Configuración
 
 ### Backend (Spring Boot API - `alumnos/`)
