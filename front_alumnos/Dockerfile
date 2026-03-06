@@ -2,10 +2,10 @@ FROM node:18
 
 WORKDIR /app
 
-COPY crud_alumnos_spring_vue/front_alumnos/package*.json ./
+COPY package*.json ./
 RUN npm install
 
-COPY crud_alumnos_spring_vue/front_alumnos .
+COPY . .
 
 RUN npm run build
 
