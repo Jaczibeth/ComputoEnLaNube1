@@ -1,0 +1,18 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+      - 'build'
+      - '-t'
+      - 'europe-west1-docker.pkg.dev/$PROJECT_ID/frontend-repo/app:latest'
+      - '-t'
+      - 'europe-west1-docker.pkg.dev/$PROJECT_ID/frontend-repo/app:$SHORT_SHA'
+      - '.'
+    dir: 'front_alumnos'
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'europe-west1-docker.pkg.dev/$PROJECT_ID/frontend-repo/app:latest']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'europe-west1-docker.pkg.dev/$PROJECT_ID/frontend-repo/app:$SHORT_SHA']
+
+images:
+  - 'europe-west1-docker.pkg.dev/$PROJECT_ID/frontend-repo/app:latest'
+  - 'europe-west1-docker.pkg.dev/$PROJECT_ID/frontend-repo/app:$SHORT_SHA'
